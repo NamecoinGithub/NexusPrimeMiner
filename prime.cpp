@@ -527,12 +527,12 @@ namespace Core
 	double GetPrimeDifficulty(CBigNum prime, int checks)
 	{
 		CBigNum lastPrime = prime;
-		CBigNum next = prime + 2;
+		CBigNum next = prime + CBigNum(2);
 		unsigned int clusterSize = 1;
 		
 		///largest prime gap in cluster can be +12
 		///this was determined by previously found clusters up to 17 primes
-		for( next ; next <= lastPrime + 12; next += 2)
+		for( next ; next <= lastPrime + CBigNum(12); next += CBigNum(2))
 		{
 			if(PrimeCheck(next, checks))
 			{
@@ -581,7 +581,7 @@ namespace Core
 	bool DivisorCheck(CBigNum test)
 	{
 		for(int index = 0; index < DIVISOR_SIEVE.size(); index++)
-			if(test % DIVISOR_SIEVE[index] == 0)
+			if(test % CBigNum(DIVISOR_SIEVE[index]) == CBigNum(0))
 				return false;
 				
 		return true;
@@ -604,9 +604,9 @@ namespace Core
 	CBigNum FermatTest(CBigNum n, CBigNum a)
 	{
 		CAutoBN_CTX pctx;
-		CBigNum e = n - 1;
+		CBigNum e = n - CBigNum(1);
 		CBigNum r;
-		BN_mod_exp(&r, &a, &e, &n, pctx);
+		BN_mod_exp(r.bn, a.bn, e.bn, n.bn, pctx);
 		
 		return r;
 	}
@@ -614,7 +614,7 @@ namespace Core
 	/** Miller-Rabin Primality Test from the OpenSSL BN Library. **/
 	bool Miller_Rabin(CBigNum n, int checks)
 	{
-		return (BN_is_prime(&n, checks, NULL, NULL, NULL) == 1);
+		return (BN_is_prime(n.bn, checks, NULL, NULL, NULL) == 1);
 	}
 
 

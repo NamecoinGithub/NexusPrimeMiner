@@ -141,7 +141,7 @@ namespace Core
 				int startOrigin = sJob->nStartOrigin;
 				int stopOrigin = sJob->nStartOrigin + sJob->nMaxOriginCount;				
 				cServerConnection->sieveJobQueuePassive->push(sieveJobId);
-				bignum2mpz(&BaseHash, zPrimeOrigin);
+				bignum2mpz(BaseHash.bn, zPrimeOrigin);
 
 				for (j = startOrigin; j < stopOrigin; j++)
 				{
@@ -759,7 +759,7 @@ namespace Core
 
 					//printf("\nSubmitting Block %s\n", data.baseHash->GetHex().c_str());
 
-					printf("[MASTER] Prime Cluster of Difficulty %f Found \n", GetPrimeDifficulty(*data.baseHash + data.nNonce, 0));
+					printf("[MASTER] Prime Cluster of Difficulty %f Found \n", GetPrimeDifficulty(*data.baseHash + CBigNum(data.nNonce), 0));
 					
 					/** Attempt to Submit the Block to Network. **/
 					unsigned char RESPONSE = CLIENT->SubmitBlock(*data.hashMerkleRoot, data.nNonce);
@@ -1053,7 +1053,7 @@ namespace Core
 					uint64_t nNonce = it->first;					
 					unsigned int nDiff = 30000000;
 					if (it->second > 3)
-						nDiff = GetPrimeBits((*job.baseHash + nNonce), 1);
+						nDiff = GetPrimeBits((*job.baseHash + CBigNum(nNonce)), 1);
 					uint32_t nPrimeCount = nDiff / 10000000;
 					//printf(" - %f - Nonce: %u\n", (double)nDiff / 10000000.0, nNonce);
 					if (nPrimeCount < 14)

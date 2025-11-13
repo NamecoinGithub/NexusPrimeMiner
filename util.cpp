@@ -30,30 +30,21 @@ uint64_t mpz2uint64(mpz_t n)
 
 int bignum2mpz(const BIGNUM *bn, mpz_t g)
 {
-	bn_check_top(bn);
-	if(((sizeof(bn->d[0]) * 8) == GMP_NUMB_BITS) && (BN_BITS2 == GMP_NUMB_BITS)) 
+	// OpenSSL 3.0 compatible version - convert via hex string
+	char *tmpchar = BN_bn2hex(bn);
+	
+	if(!tmpchar)
+		return 0;
+	
+	// Convert hex string to mpz
+	if(mpz_set_str(g, tmpchar, 16) != 0)
 	{
-		/* The common case */
-		if(!_mpz_realloc (g, bn->top))
-			return 0;
-		memcpy(&g->_mp_d[0], &bn->d[0], bn->top * sizeof(bn->d[0]));
-		g->_mp_size = bn->top;
-		if(bn->neg)
-			g->_mp_size = -g->_mp_size;
-			
-		return 1;
-	}
-	else
-	{
-		char *tmpchar = BN_bn2hex(bn);
-		
-		if(!tmpchar)
-			return 0;
-		
 		OPENSSL_free(tmpchar);
-		
 		return 0;
 	}
+	
+	OPENSSL_free(tmpchar);
+	return 1;
 }
 
 void SetCurrentThreadPriority(int priority)
